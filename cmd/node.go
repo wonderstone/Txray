@@ -9,7 +9,6 @@ import (
 	"Txray/core/sub"
 	"Txray/log"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"strconv"
@@ -249,7 +248,7 @@ func InitNodeShell(shell *ishell.Shell) {
 					log.Error("open ", fileArg, " : 没有这个文件")
 					return
 				}
-				data, _ := ioutil.ReadFile(fileArg)
+				data, _ := os.ReadFile(fileArg)
 				content := strings.ReplaceAll(string(data), "\r\n", "\n")
 				content = strings.ReplaceAll(content, "\r", "\n")
 				c.Println("文件内容如下：")
@@ -920,5 +919,14 @@ func InitNodeShell(shell *ishell.Shell) {
 			}
 		},
 	})
-	shell.AddCmd(nodeCmd)
+	// ~ delete duplicate
+	nodeCmd.AddCmd(&ishell.Cmd{
+		Name: "delete-duplicate",
+		Aliases: []string{"-dd"},
+		Func: func(c *ishell.Context) {
+			manage.Manager.DeleteDuplicate()
+		},
+	})
+
+		shell.AddCmd(nodeCmd)
 }
