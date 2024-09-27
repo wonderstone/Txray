@@ -13,7 +13,8 @@ type Node struct {
 	protocols.Protocol `json:"-"`
 	SubID              string  `json:"sub_id"`
 	Data               string  `json:"data"`
-	TestResult         float64 `json:"-"`
+	// TestResult         float64 `json:"-"`
+	TestResult 		   float64 `json:"test_result"`
 }
 
 func (n *Node) TestResultStr() string {
@@ -77,4 +78,14 @@ func (n *Node) Tcping() {
 
 func (n *Node) Show() {
 	ShowTopBottomSepLine('=', strings.Split(n.GetInfo(), "\n")...)
+}
+// ~ IsEqual 判断两个节点是否相等 
+// todo Protocol 接口 Getlink()方法返回的是一个字符串，包含了节点的所有信息，包括地址、端口、协议等
+// todo 通过Getlink()方法可以判断两个节点是否相等
+// todo 但是这个方法可能不好，因为Getlink()方法返回的字符串可能会有很多不同的情况是由非关键信息导致的
+// @ 目前的判断方式是通过判断节点的地址、端口、协议是否相等来判断两个节点是否相等
+func (n *Node) IsEqual(node *Node) bool {
+	return n.GetAddr() == node.GetAddr() && 
+	n.GetPort() == node.GetPort() &&
+	n.GetProtocolMode() == node.GetProtocolMode()
 }
