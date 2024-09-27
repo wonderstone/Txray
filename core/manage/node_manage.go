@@ -64,6 +64,29 @@ func (m *Manage) Tcping() {
 	m.SetSelectedIndex(1)
 
 }
+// ~ add a TcpingDel method to delete the node that failed to ping
+func (m *Manage) TcpingDel() {
+	m.Tcping()
+	m.DelNodeByTestResult(99999)
+}
+
+// ~ add a DelNodeByTestResult method to delete the node that failed to ping
+func (m *Manage) DelNodeByTestResult(result float64) {
+	defer m.Save()
+	selectedNode := m.SelectedNode()
+	newNodeList := make([]*node.Node, 0)
+	m.NodeForEach(func(i int, n *node.Node) {
+		if n.TestResult == result {
+			m.MoveToRecycle(n)
+		} else {
+			newNodeList = append(newNodeList, n)
+		}
+	})
+	m.NodeList = newNodeList
+	m.SetSelectedIndexByNode(selectedNode)
+}
+
+
 
 func (m *Manage) NodeSort(less func(*node.Node, *node.Node) bool) {
 	if m.NodeLen() <= 1 {
@@ -155,4 +178,31 @@ func (m *Manage) GetNodeLink(key string) []string {
 		links = append(links, m.GetNode(index).GetLink())
 	}
 	return links
+}
+// ~ DeleteDuplicate will delete duplicate nodes
+func (m *Manage) DeleteDuplicate() {
+	defer m.Save()
+	selectedNode := m.SelectedNode()
+	newNodeList := make([]*node.Node, 0)
+	// iter all the nodes
+	// if the node is not duplicate in the new list, append it to the new list
+	m.NodeForEach(func(i int, n *node.Node) {
+		if hasDuplicate(newNodeList, n) {
+			m.MoveToRecycle(n)
+		} else {
+			newNodeList = append(newNodeList, n)
+		}
+	})
+	m.NodeList = newNodeList
+
+	m.SetSelectedIndexByNode(selectedNode)
+}
+
+func hasDuplicate(nodes []*node.Node, n *node.Node) bool {
+	for _, node := range nodes {
+		if node.IsEqual(n) {
+			return true
+		}
+	}
+	return false
 }
