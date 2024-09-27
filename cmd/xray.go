@@ -29,4 +29,23 @@ func InitServiceShell(shell *ishell.Shell) {
 			xray.Stop()
 		},
 	})
+		// 设置proxy
+		shell.AddCmd(&ishell.Cmd{
+			Name: "setproxy",
+			Help: "设置代理",
+			Func: func(c *ishell.Context) {
+				xray.SetProxy()
+			},
+		})
+	
+		// 反置proxy
+		shell.AddCmd(&ishell.Cmd{
+			Name: "unsetproxy",
+			Help: "取消代理",
+			Func: func(c *ishell.Context) {
+				xray.UnsetProxy()
+			},
+		})
+	
+	
 }
